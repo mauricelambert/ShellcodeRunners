@@ -78,5 +78,5 @@ int main(int argc, char **argv) {
 	WaitForSingleObject(thread_handle, 1000);
 	CloseHandle(thread_handle);
 
-	CloseHandle(process_handle); // bypass SentinelOne
+	CloseHandle(process_handle); // this line bypass some Antivirus and EDR detection (i don't have any explanation for EDR bypass, i just observed it)
 }
