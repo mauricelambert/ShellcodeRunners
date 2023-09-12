@@ -23,6 +23,13 @@
 """
 This repository implements multiples way to execute
 shellcode with different platforms, systems and languages.
+
+To exploit process injection on Linux the target process must be PTRACER.
+from ctypes import cdll, c_ulong
+libc = cdll.LoadLibrary("libc.so.6")
+PR_SET_PTRACER = 0x59616d61
+PR_SET_PTRACER_ANY = c_ulong(-1)
+libc.prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY)
 """
 
 __version__ = "0.0.1"
