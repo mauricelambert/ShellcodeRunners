@@ -12,6 +12,11 @@
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
+// To exploit process injection the procces must be PTRACER (https://man7.org/linux/man-pages/man2/prctl.2.html)
+// To build your target process with custom executable your should add the following lines:
+// #include <sys/prctl.h>
+// prctl(PR_SET_PTRACER, PR_SET_PTRACER_ANY)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
